@@ -26,6 +26,8 @@ const BOT_PLAYER_ID = 2;
 const delaySwapGem = 2000;
 const delayFindGame = 5000;
 
+const NUMBER_CAST_SKILL_MONK = 2;
+
 var sfs;
 var room;
 
@@ -34,11 +36,12 @@ var enemyPlayer;
 var currentPlayerId;
 var grid;
 
-const username = "";
-const token = "bot";
+const username = "khanh.doancong";
+const token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJraGFuaC5kb2FuY29uZyIsImF1dGgiOiJST0xFX1VTRVIiLCJMQVNUX0xPR0lOX1RJTUUiOjE2NTMzNjgyODA2ODQsImV4cCI6MTY1NTE2ODI4MH0.FnrPkeCD71G_M8odMZR5Kl9iVjc79FipjAw6iQtURTOqsrFVsgWhduiBDj6J1QxNKvrFJTSsHrvhJoaWx_HvhQ";
 var visualizer = new Visualizer({ el: '#visual' });
 var params = window.params;
 var strategy = window.strategy;
+var numberCastSkillMonK = 0;
 visualizer.start();
 
 // Connect to Game server
@@ -365,6 +368,16 @@ function SendFinishTurn(isFirstTurn) {
 
 }
 
+function getRedGem(gems) {
+	let temp = [];
+	gems.forEach(gem => {
+		if(gem.type == GemType.RED) {
+			temp.push(gem);
+		}
+	})
+	return temp.length;
+}
+
 
 function StartTurn(param) {
 	setTimeout(function() {
@@ -374,17 +387,32 @@ function StartTurn(param) {
 			trace("not isBotTurn");
 			return;
 		}
+		console.log("currentPlayerId>>>>", currentPlayerId);
+		console.log(">>>>>>>>>>>>>>>>>>");
+		console.log("botPlayer>>>", botPlayer);
+		console.log("enemyPlayer>>>", enemyPlayer);
+		console.log("this.grid>>>>>>>>>>>>", this.grid);
 
 		if (strategy) {
 			strategy.playTurn();
 			return;
 		}
-		let heroFullMana = botPlayer.anyHeroFullMana();
-		if (heroFullMana != null) {
-			SendCastSkill(heroFullMana)
+		// get gem type red
+		let numberGemRed = getRedGem(this.grid.gems);
+		// get enemy max damage
+		let enemyToFireSpiritTarget = enemyPlayer.getEnemyHeroToTargetForFireSpirit();
+		let heroCastSkill = botPlayer.getHeroCastSkill(numberCastSkillMonK, numberGemRed, enemyToFireSpiritTarget);
+		if(heroCastSkill != null) {
+			SendCastSkill(heroCastSkill)
 		} else {
 			SendSwapGem()
 		}
+		// let heroFullMana = botPlayer.anyHeroFullMana();
+		// if (heroFullMana != null) {
+		// 	SendCastSkill(heroFullMana)
+		// } else {
+		// 	SendSwapGem()
+		// }
 
 	}, delaySwapGem);
 }

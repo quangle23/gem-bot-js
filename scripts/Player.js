@@ -66,6 +66,68 @@ class Player
         return res;
     }
 
+    monKHeroFullMana() {
+        let arr = this.heroes.filter(hero => hero.isAlive() && hero.isFullMana());
+        arr.forEach((hero) => {
+            if(hero.id == HeroIdEnum.MONK) {
+                return hero;
+            }
+        });
+        return null;
+    }
+
+    calculateAttackFireSpirit(enemyTarget, numberGemRed) {
+        return enemyTarget.attack + numberGemRed;
+    }
+
+    getHpTargetEnemy(enemyTarget) {
+        return enemyTarget.hp;
+    }
+
+    getEnemyHeroToTargetForFireSpirit()
+    {
+        let arr = this.heroes.filter(hero => hero.isAlive());
+        if(arr != null && arr != undefined) {
+            let heroMaxAttack = arr[0];
+            arr.forEach((hero) => {
+                if(hero.attack > heroMaxAttack.attack) {
+                    heroMaxAttack = hero;
+                }
+            });
+            return heroMaxAttack;
+        }
+        return null;
+    }
+
+    getHeroCastSkill(numberCastSkillMonK, numberGemRed, targetHero) {
+        let arr = this.heroes.filter(hero => hero.isAlive() && hero.isFullMana());
+        if(arr != null && arr != undefined) {
+            arr.forEach((hero) => {
+                if (numberCastSkillMonK < 3) {
+                    if (hero.id == HeroIdEnum.MONK) {
+                        return hero;
+                    }
+                } else {
+                    if (hero.id == HeroIdEnum.FIRE_SPIRIT) {
+                        if(targetHero != null) {
+                            let damageAttack = this.calculateAttackFireSpirit(targetHero, numberGemRed);
+                            let enemyHp = this.getHpTargetEnemy(targetHero);
+                            let percent = damageAttack / enemyHp * 100;
+                            if(percent >= 80){
+                                return hero;
+                            }
+                        }
+                    } else {
+                        if (hero.id == HeroIdEnum.CERBERUS && hero.attack > 10) {
+                            return hero;
+                        }
+                    }
+                }
+            });
+        }
+        return null;
+    }
+
     clone() {
         const cloned = new Player(this.playerId, this.displayName);
         cloned.heroes = this.heroes.map(hero => hero.clone());
