@@ -101,29 +101,31 @@ class Player
 
     getHeroCastSkill(numberCastSkillMonK, numberGemRed, targetHero) {
         let arr = this.heroes.filter(hero => hero.isAlive() && hero.isFullMana());
+        console.log("array hero", arr);
         if(arr != null && arr != undefined) {
-            arr.forEach((hero) => {
+
+            for (let i = 0; i < arr.length; i++) {
                 if (numberCastSkillMonK < 3) {
-                    if (hero.id == HeroIdEnum.MONK) {
-                        return hero;
+                    if(arr[i].id == "MONK") {
+                        return arr[i];
                     }
                 } else {
-                    if (hero.id == HeroIdEnum.FIRE_SPIRIT) {
+                    if (arr[i].id == "FIRE_SPIRIT") {
                         if(targetHero != null) {
                             let damageAttack = this.calculateAttackFireSpirit(targetHero, numberGemRed);
                             let enemyHp = this.getHpTargetEnemy(targetHero);
                             let percent = damageAttack / enemyHp * 100;
                             if(percent >= 80){
-                                return hero;
+                                return arr[i];
                             }
                         }
                     } else {
-                        if (hero.id == HeroIdEnum.CERBERUS && hero.attack > 10) {
-                            return hero;
+                        if (arr[i].id == "CERBERUS" && arr[i].attack > 10) {
+                            return arr[i];
                         }
                     }
                 }
-            });
+            }
         }
         return null;
     }

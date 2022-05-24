@@ -402,8 +402,13 @@ function StartTurn(param) {
 		// get enemy max damage
 		let enemyToFireSpiritTarget = enemyPlayer.getEnemyHeroToTargetForFireSpirit();
 		let heroCastSkill = botPlayer.getHeroCastSkill(numberCastSkillMonK, numberGemRed, enemyToFireSpiritTarget);
+		console.log("numberCastSkillMonK", numberCastSkillMonK);
+		console.log("heroCastSkill", heroCastSkill);
 		if(heroCastSkill != null) {
-			SendCastSkill(heroCastSkill)
+			SendCastSkill(heroCastSkill);
+			if(heroCastSkill.id == "MONK") {
+				numberCastSkillMonK++;
+			}
 		} else {
 			SendSwapGem()
 		}
