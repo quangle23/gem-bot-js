@@ -387,11 +387,11 @@ function StartTurn(param) {
 			trace("not isBotTurn");
 			return;
 		}
-		console.log("currentPlayerId>>>>", currentPlayerId);
-		console.log(">>>>>>>>>>>>>>>>>>");
-		console.log("botPlayer>>>", botPlayer);
-		console.log("enemyPlayer>>>", enemyPlayer);
-		console.log("this.grid>>>>>>>>>>>>", this.grid);
+		// console.log("currentPlayerId>>>>", currentPlayerId);
+		// console.log(">>>>>>>>>>>>>>>>>>");
+		// console.log("botPlayer>>>", botPlayer);
+		// console.log("enemyPlayer>>>", enemyPlayer);
+		// console.log("this.grid>>>>>>>>>>>>", this.grid);
 
 		if (strategy) {
 			strategy.playTurn();
