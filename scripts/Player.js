@@ -105,7 +105,7 @@ class Player
         if(arr != null && arr != undefined) {
 
             for (let i = 0; i < arr.length; i++) {
-                if (numberCastSkillMonK < 3) {
+                if (numberCastSkillMonK < 2) {
                     if(arr[i].id == "MONK") {
                         return arr[i];
                     }
