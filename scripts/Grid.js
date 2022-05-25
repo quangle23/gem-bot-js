@@ -42,6 +42,12 @@ class Grid {
             return [-1, -1];
         }
 
+        let matchGemMonK = listMatchGem.find(gemMatch => gemMatch.type == GemType.GREEN || gemMatch.type == GemType.YELLOW);
+
+        if (matchGemMonK) {
+            return matchGemMonK.getIndexSwapGem();
+        }
+
         let matchGemSizeThanFour = listMatchGem.find(gemMatch => gemMatch.sizeMatch > 4);
 
         if (matchGemSizeThanFour) {

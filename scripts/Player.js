@@ -66,6 +66,70 @@ class Player
         return res;
     }
 
+    monKHeroFullMana() {
+        let arr = this.heroes.filter(hero => hero.isAlive() && hero.isFullMana());
+        arr.forEach((hero) => {
+            if(hero.id == HeroIdEnum.MONK) {
+                return hero;
+            }
+        });
+        return null;
+    }
+
+    calculateAttackFireSpirit(enemyTarget, numberGemRed) {
+        return enemyTarget.attack + numberGemRed;
+    }
+
+    getHpTargetEnemy(enemyTarget) {
+        return enemyTarget.hp;
+    }
+
+    getEnemyHeroToTargetForFireSpirit()
+    {
+        let arr = this.heroes.filter(hero => hero.isAlive());
+        if(arr != null && arr != undefined) {
+            let heroMaxAttack = arr[0];
+            arr.forEach((hero) => {
+                if(hero.attack > heroMaxAttack.attack) {
+                    heroMaxAttack = hero;
+                }
+            });
+            return heroMaxAttack;
+        }
+        return null;
+    }
+
+    getHeroCastSkill(numberCastSkillMonK, numberGemRed, targetHero) {
+        let arr = this.heroes.filter(hero => hero.isAlive() && hero.isFullMana());
+        console.log("array hero", arr);
+        if(arr != null && arr != undefined) {
+
+            for (let i = 0; i < arr.length; i++) {
+                if (numberCastSkillMonK < 2) {
+                    if(arr[i].id == "MONK") {
+                        return arr[i];
+                    }
+                } else {
+                    if (arr[i].id == "FIRE_SPIRIT") {
+                        if(targetHero != null) {
+                            let damageAttack = this.calculateAttackFireSpirit(targetHero, numberGemRed);
+                            let enemyHp = this.getHpTargetEnemy(targetHero);
+                            let percent = damageAttack / enemyHp * 100;
+                            if(percent >= 80){
+                                return arr[i];
+                            }
+                        }
+                    } else {
+                        if (arr[i].id == "CERBERUS" && arr[i].attack > 10) {
+                            return arr[i];
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     clone() {
         const cloned = new Player(this.playerId, this.displayName);
         cloned.heroes = this.heroes.map(hero => hero.clone());
