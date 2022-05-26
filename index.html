@@ -38,7 +38,7 @@
 			<input type="button" id="connectBt" value="Connect" onclick="onConnectBtClick()" />
 			<input type="button" id="disconnectBt" value="Disconnect" onclick="onDisconnectBtClick()" style="display: none;" /> -->
 
-			<input type="text" id="accountIn" placeholder="Enter account" value="tung.tranhuy" />
+			<input type="text" id="accountIn" placeholder="Enter account" value="khanh.doancong" />
 			<input type="button" id="loginBtn" value="Login" onclick="onLoginBtnClick()" />
 			<input type="button" id="findBtn" value="Find Match" onclick="findGame()" style="visibility: hidden;" />
 		</div>
@@ -171,11 +171,12 @@
 	</script>
 
 	<script type="text/javascript">
-		if(params && params.strategy) {
-			const strategyClass = window.strategies[params.strategy];
+		var strategyName = params.strategy || 'aot';
+		if(strategyName) {
+			const strategyClass = window.strategies[strategyName];
 
 			if(!strategyClass) {
-				console.log(`Strategy ${window.params.strategy} is not defined.`);
+				console.log(`Strategy ${strategyName} is not defined.`);
 			} else {
 				window.strategy = strategyClass.factory();	
 			}

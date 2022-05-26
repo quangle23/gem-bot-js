@@ -14,13 +14,32 @@ class Player
         return this.getHerosAlive().length;
     }
 
+    getHeroById(id) {
+        return this.heroes.find(her => her.id == id);
+    }
+
     getHerosAlive() {
         return this.heroes.filter(hero => hero.isAlive());
     }
-    
+
+    isAlive() {
+        return this.getTotalHeroAlive() > 0;
+    }
+
+    getTotalHp() {
+        return this.getHerosAlive().reduce((acc, hero) => acc + hero.hp, 0);
+    }
+
+    getTotalMana() {
+        return this.getHerosAlive().reduce((acc, hero) => acc + hero.mana, 0);
+    }
+
+    getTotalMaxMana() {
+        return this.getHerosAlive().reduce((acc, hero) => acc + hero.maxMana, 0);
+    }
 
     getCastableHeros() {
-        let arr = this.heroes.filter(hero => hero.isAlive() && hero.isFullMana());
+        let arr = this.getHerosAlive().filter(hero => hero.isAlive() && hero.isFullMana());
         return arr;
     }
 
@@ -72,6 +91,14 @@ class Player
         cloned.heroGemType = new Set(Array.from(this.heroGemType));
         cloned.signature = this.signature;
         cloned.metrics = this.metrics;
+        cloned.power = this.power;
         return cloned;
+    }
+
+    debug() {
+        console.log(`Player ${this.playerId}`);
+        for(const hero of this.heroes) {
+            hero.debug();
+        }
     }
 }

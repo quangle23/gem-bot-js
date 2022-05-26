@@ -1,12 +1,10 @@
-function union (sets) {
-    return sets.reduce((combined, list) => {
-      return new Set([...combined, ...list]);
-    }, new Set());
-  }
-
 class GridDistinction {
     removedGems = [];
     matchesSize = [];
+
+    debug() {
+        console.log(`Removed gems ${this.removedGems.length}: ${this.removedGems.map(gem => gem.type).join(', ')}`)
+    }
 }
 class Grid {
     constructor(gemsCode, gemModifiers, gemTypes) {
@@ -36,8 +34,7 @@ class Grid {
     recommendSwapGem() {
         let listMatchGem = this.suggestMatch();
 
-        console.log("recommendSwapGem: ", listMatchGem);
-
+        console.log("recommendSwapGem", listMatchGem)
         if (listMatchGem.length === 0) {
             return [-1, -1];
         }
@@ -244,7 +241,6 @@ class Grid {
     performSwap(index1, index2) {
         const currentGem = this.gems[index1];
         const swapGem = this.gems[index2];
-        console.log(currentGem, swapGem);
         this.swap(currentGem, swapGem);
         const allMatchGems = this.getAllMatches();
         const distinction = new GridDistinction();
@@ -260,7 +256,7 @@ class Grid {
                 matches.push(matchGems);
             }
         }
-        return matches.length > 0 ? [union(matches)] : [];
+        return matches.length > 0 ? matches : [];
     }
     
     performDistinction(allMatchGems, distinction) {
@@ -311,7 +307,7 @@ class Grid {
         for(let x = gem.x - 1; x < gem.x + 1; x++) {
             for(let y = gem.y - 1; y < gem.y + 1; y++) {
                 const targetGem = this.gemAt(gem.x, y);
-                if(!targetGem.sameOne(gem)) {
+                if(targetGem && !targetGem.sameOne(gem)) {
                     this.distinctGem(targetGem, distinction);
                 }
             }
@@ -350,6 +346,21 @@ class Grid {
         distinction.removedGems.push(gem.clone());
     }
 
+    countGemByType(type) {
+        const count = this.gems.reduce((acc, curr) => {
+            if(curr.type = GemType.NONE || curr.removed) {
+                return  acc + (1 / 6);
+            }
+
+            if(curr.type == type) {
+                return acc + 1;
+            }
+            
+            return acc;
+        }, 0);
+        return count;
+    }
+
     performReshape() {
         for(const gem of this.gems) {
             if(gem.removed) {
@@ -381,5 +392,17 @@ class Grid {
         cloned.gemTypes = new Set(Array.from(this.gemTypes));
         cloned.myHeroGemType = new Set(Array.from(this.myHeroGemType));
         return cloned;
+    }
+
+    toString() {
+        let str = '';
+        for(let y = 0; y < 8; y++) {
+            for(let x = 0; x < 8; x++) {
+                const gem = this.gemAt(x, y);
+                str += `${gem.type} `;
+            }
+            str += '\n';
+        }
+        return str;
     }
 }

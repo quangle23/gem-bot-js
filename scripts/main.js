@@ -23,7 +23,7 @@ const BATTLE_MODE = "BATTLE_MODE";
 const ENEMY_PLAYER_ID = 0;
 const BOT_PLAYER_ID = 2;
 
-const delaySwapGem = 2000;
+const delaySwapGem = 3000;
 const delayFindGame = 5000;
 
 var sfs;
@@ -34,8 +34,8 @@ var enemyPlayer;
 var currentPlayerId;
 var grid;
 
-const username = "";
-const token = "bot";
+const username = "quang.ledang";
+const token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJxdWFuZy5sZWRhbmciLCJhdXRoIjoiUk9MRV9VU0VSIiwiTEFTVF9MT0dJTl9USU1FIjoxNjUyODU4MzgyMDQwLCJleHAiOjE2NTQ2NTgzODJ9.Gy08hnTMBNFLo-UzgeSHhbnF__2-f40_hnyh2kroa0gDZg5n3CZ0oZFF_wI0rQ9OvmcpGuBdw_Iaiog7XU5SGA";
 var visualizer = new Visualizer({ el: '#visual' });
 var params = window.params;
 var strategy = window.strategy;
@@ -44,8 +44,8 @@ visualizer.start();
 // Connect to Game server
 initConnection();
 
-if (params.username) {
-	document.querySelector('#accountIn').value = params.username;
+if (username) {
+	document.querySelector('#accountIn').value = username;
 }
 
 function initConnection() {
@@ -226,7 +226,7 @@ function OnExtensionResponse(event) {
 	switch (cmd) {
 		case "START_GAME":
 			let gameSession = evtParam.getSFSObject("gameSession");
-			StartGame(gameSession, room);
+			StartGame(gameSession)
 			break;
 		case "END_GAME":
 			EndGame();
@@ -246,7 +246,7 @@ function OnExtensionResponse(event) {
 	}
 }
 
-function StartGame(gameSession, room) {
+function StartGame(gameSession) {
 	// Assign Bot player & enemy player
 	AssignPlayers(room);
 
@@ -343,8 +343,6 @@ function AssignPlayers(room) {
 		botPlayer = new Player(playerId2, "player" + playerId2);
 		enemyPlayer = new Player(playerId1, "player" + playerId1);
 	}
-
-
 }
 
 function EndGame() {
@@ -393,8 +391,6 @@ function isBotTurn() {
 	return botPlayer.playerId == currentPlayerId;
 }
 
-
-
 function SendCastSkill(heroCastSkill, { targetId, selectedGem, gemIndex, isTargetAllyOrNot } = {}) {
 	var data = new SFS2X.SFSObject();
 
@@ -423,8 +419,8 @@ function SendCastSkill(heroCastSkill, { targetId, selectedGem, gemIndex, isTarge
 	} else {
 		data.putBool("isTargetAllyOrNot", false);
 	}
-	log("sendExtensionRequest()|room:" + room.Name + "|extCmd:" + USE_SKILL + "|Hero cast skill: " + heroCastSkill.name);
-	trace("sendExtensionRequest()|room:" + room.Name + "|extCmd:" + USE_SKILL + "|Hero cast skill: " + heroCastSkill.name);
+	log("sendExtensionRequest()|room:" + room.Name + "|extCmd:" + USE_SKILL + "|Hero cast skill: " + heroCastSkill.id);
+	trace("sendExtensionRequest()|room:" + room.Name + "|extCmd:" + USE_SKILL + "|Hero cast skill: " + heroCastSkill.id);
 
 	SendExtensionRequest(USE_SKILL, data);
 
@@ -476,11 +472,11 @@ function HandleGems(paramz) {
 	let gemCode = lastSnapshot.getSFSArray("gems");
 	let gemModifiers = lastSnapshot.getSFSArray("gemModifiers");
 
-	console.log("gemModifiers : ", gemModifiers);
+	// console.log("gemModifiers : ", gemModifiers);
 
 	grid.updateGems(gemCode, gemModifiers);
 
-	// setTimeout(function () { SendFinishTurn(false) }, delaySwapGem);
+	setTimeout(function () { SendFinishTurn(false) }, delaySwapGem);
 }
 
 function HandleHeroes(paramz) {
@@ -497,7 +493,7 @@ function HandleHeroes(paramz) {
 
 
 var log = function (msg) {
-	console.log("truong : " + "|" + msg);
+	// console.log("truong : " + "|" + msg);
 }
 
 
@@ -513,12 +509,12 @@ function GetRandomInt(max) {
 function SelectGem() {
 	let recommendGemType = botPlayer.getRecommendGemType();
 
-	console.log("recommendGemType: ", recommendGemType);
-	console.log("grid.gemType : ", grid.gemTypes);
+	// console.log("recommendGemType: ", recommendGemType);
+	// console.log("grid.gemType : ", grid.gemTypes);
 
 	let gemSelect = Array.from(recommendGemType).find(gemType => Array.from(grid.gemTypes).includes(gemType));
 
-	console.log("gemSelect : ", gemSelect);
+	// console.log("gemSelect : ", gemSelect);
 
 	return gemSelect;
 }
