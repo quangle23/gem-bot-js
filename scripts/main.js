@@ -34,8 +34,8 @@ var enemyPlayer;
 var currentPlayerId;
 var grid;
 
-const username = "quang.ledang";
-const token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJxdWFuZy5sZWRhbmciLCJhdXRoIjoiUk9MRV9VU0VSIiwiTEFTVF9MT0dJTl9USU1FIjoxNjUyODU4MzgyMDQwLCJleHAiOjE2NTQ2NTgzODJ9.Gy08hnTMBNFLo-UzgeSHhbnF__2-f40_hnyh2kroa0gDZg5n3CZ0oZFF_wI0rQ9OvmcpGuBdw_Iaiog7XU5SGA";
+const username = "khanh.doancong";
+const token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJraGFuaC5kb2FuY29uZyIsImF1dGgiOiJST0xFX1VTRVIiLCJMQVNUX0xPR0lOX1RJTUUiOjE2NTI4NTgzOTQ1MDMsImV4cCI6MTY1NDY1ODM5NH0.5dkqKqbRj68acbrKjL9ZEgezWMwfK6Z5EFW37NpZt_6OKomZpxbCc9Zzo-CTaCuzlh8qOFwwhCPLYEhBpumV8Q";
 var visualizer = new Visualizer({ el: '#visual' });
 var params = window.params;
 var strategy = window.strategy;
