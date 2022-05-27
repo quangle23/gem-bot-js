@@ -124,7 +124,18 @@ class AotGameState {
     const game = this.game;
     const grid = this.grid.clone();
     const botPlayer = this.botPlayer.clone();
+    const heroGems = botPlayer.getHerosAlive().map((hero) => hero.gems);
+    let gemTypes = [];
+    console.log("heroGems ->" , heroGems)
+    for (let gem of heroGems) {
+      gemTypes = gemTypes.concat(gem)
+    }
+    console.log("clone: gemsType before ---->", gemTypes);
+    gemTypes = gemTypes.filter((item, pos) => gemTypes.indexOf(item) === pos);
+    console.log("clone: gemsType ---->", gemTypes);
+    grid.myHeroGemType = gemTypes;
     const enemyPlayer = this.enemyPlayer.clone();
+    console.log("clone: grid ---->", grid);
     const state = new AotGameState({ game, grid, botPlayer, enemyPlayer });
     state.distinctions = [...this.distinctions];
     state.turnEffects = [...this.turnEffects];
@@ -389,9 +400,9 @@ class AotVolcanoWrathSkill extends AotCastSkill {
         }
       }
 
-      if(!heroTargetMaxAttack)  {
-        heroTargetMaxAttack = targetHero;
-      } else if(targetHero.attack > heroTargetMaxAttack.attack) {
+      heroTargetMaxAttack = targetHero;
+      
+      if(targetHero.attack > heroTargetMaxAttack.attack) {
         heroTargetMaxAttack = targetHero;
       }
 
@@ -584,19 +595,20 @@ class GameSimulator {
     return this.state;
   }
 
-  applyMove(move) {
-    // console.log("move ==========>", move)
-    if (move.isSwap) {
-      return this.applySwap(move);
-    } else if (move.isCastSkill) {
+  applyMove(move, state) {
+    console.log("applyMove: move ->", move)
+    if (move.isCastSkill) {
       return this.applyCastSkill(move);
+    } else if (move.isSwap) {
+      return this.applySwap(move, state);
     }
     return this;
   }
 
-  applySwap(move) {
+  applySwap(move, state) {
     const { swap } = move;
     const { index1, index2 } = swap;
+    console.log("applySwap: state ->", state)
     const result = this.state.grid.performSwap(index1, index2);
     this.applyDistinctionResult(result);
     return result;
@@ -615,11 +627,11 @@ class GameSimulator {
     for (const [type, value] of Object.entries(turn.manaGem)) {
       this.applyMana(type, value);
     }
+    this.applyBuffExtraTurn(turn.buffExtraTurn);
     this.applyMaxMatchedSize(turn.maxMatchedSize);
     this.applyBuffAttack(turn.buffAttack);
     this.applyBuffMana(turn.buffMana);
     this.applyHitPoint(turn.buffHitPoint);
-    this.applyBuffExtraTurn(turn.buffExtraTurn);
   }
 
   applyMaxMatchedSize(value) {
@@ -778,11 +790,11 @@ class AotHeroMetrics {
   });
 
   manaMetric = new AotHeroMetricScale((hero, player, enemyPlayer, state) => {
-    return (hero.mana/hero.maxMana + 1)*0.6;
+    return (hero.mana/hero.maxMana + 1)*0.5;
   });
 
   attackMetric = new AotHeroMetricScale((hero, player, enemyPlayer, state) => {
-    return hero.attack*0.3;
+    return hero.attack*0.2;
   });
 
   skillMetric = new  AotHeroMetricScale((hero, player, enemyPlayer, state) => {
@@ -1193,6 +1205,23 @@ class AoTStrategy {
     return this.state.clone();
   }
 
+  chooseSwordIfLowHp(state) {
+    let canAtk = false;
+    const botPlayers = state.botPlayer.getHerosAlive();
+    const enemyPlayer = state.enemyPlayer.getHerosAlive();
+    console.log(botPlayer, enemyPlayer);
+    for (let bot of botPlayers) {
+      if ((bot.mana >= bot.maxMana) && bot.id != HeroIdEnum.MONK) {
+        return false;
+      }
+    }
+    if (botPlayers[0].attack >= enemyPlayer[0].hp) {
+      canAtk = true;
+    }
+
+    return canAtk;
+  }
+
   chooseBestPossibleMove(state, deep = 2) {
     // console.log(`${AoTStrategy.name}: chooseBestPosibleMove`);
     const possibleMoves = this.getAllPossibleMove(state);
@@ -1205,13 +1234,19 @@ class AoTStrategy {
 
     let currentBestMove = null;
     let currentBestState = null;
-
     for (const move of possibleMoves) {
+      const { swap } = move;
+      console.log("chooseBestPossibleMove: swap->", swap);
+      console.log("chooseBestPossibleMove: possibleMoves->", this.chooseSwordIfLowHp(state))
+      if (swap && swap.type == GemType.SWORD && this.chooseSwordIfLowHp(state)) {
+        currentBestMove = move;
+        return currentBestMove;
+      }
       const clonedState = state.clone();
       // console.log(`test move deep ${deep} ${move.type} ${possibleMoves.indexOf(move)}/${possibleMoves.length}`);
       move.debug();
       const futureState = this.seeFutureState(move, clonedState, deep);
-
+      
       for(const distinction of futureState.distinctions) {
         // console.log(`Turn distinction ${futureState.distinctions.indexOf(distinction)}/${futureState.distinctions.length}`)
         distinction.debug();
@@ -1314,8 +1349,8 @@ class AoTStrategy {
   applyMoveOnState(move, state) {
     const cloneState = state.clone();
     const simulator = new GameSimulator(cloneState);
-    simulator.applyMove(move);
     const newState = simulator.getState();
+    simulator.applyMove(move, newState);
     return newState;
   }
 
@@ -1330,12 +1365,11 @@ class AoTStrategy {
     const currentEnemy = state.getCurrentEnemyPlayer();
 
     const castableHeroes = currentPlayer.getCastableHeros();
-    // console.log(`All castable heros ${castableHeroes.map(hero => `${hero.id} ${hero.mana}/${hero.maxMana}`)}`)
     const possibleCastOnHeros = castableHeroes.map((hero) =>
       this.possibleCastOnHero(hero, currentPlayer, currentEnemy, state)
     );
+
     const allPossibleCasts = [].concat(...possibleCastOnHeros);
-    // console.log(`All possible casts ${allPossibleCasts.length}`);
     const focusSkillCasts = allPossibleCasts.filter(skill => skill.hero.id == HeroIdEnum.SEA_SPIRIT);
 
     if(focusSkillCasts.length > 0) {

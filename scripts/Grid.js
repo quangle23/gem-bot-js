@@ -243,6 +243,7 @@ class Grid {
         const swapGem = this.gems[index2];
         this.swap(currentGem, swapGem);
         const allMatchGems = this.getAllMatches();
+        console.log("performSwap: allMatchGems->", allMatchGems)
         const distinction = new GridDistinction();
         const result = this.performDistinction(allMatchGems, distinction);
         return result;
