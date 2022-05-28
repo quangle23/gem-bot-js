@@ -380,7 +380,7 @@ class AotVolcanoWrathSkill extends AotCastSkill {
   }
 
   static fromHeroState(hero, player, enemyPlayer, state) {
-    const targetPriovity = [HeroIdEnum.DISPATER, HeroIdEnum.MERMAID, HeroIdEnum.MONK];
+    const targetPriovity = [HeroIdEnum.DISPATER, HeroIdEnum.MERMAID, HeroIdEnum.MONK, HeroIdEnum.THUNDER_GOD];
     const targetBlacklitst = [HeroIdEnum.SKELETON, HeroIdEnum.ELIZAH];
     const toalRedGem = state.grid.countGemByType(GemType.RED);
     let heroTargetCanKill = null;
